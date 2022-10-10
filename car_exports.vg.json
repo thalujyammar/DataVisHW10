@@ -1,0 +1,137 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "width": 500,
+    "height": 400,
+    "title": "Car Exports Total Value (1000 US Dollars) and Quantity (kg) by country, 2019",
+    "data": {
+        "url": "https://raw.githubusercontent.com/thalujyammar/DataVisHW10/main/WITS-By-HS6ProductExp.csv"
+    },
+    "transform": [
+        {
+        "calculate": "datum.Quantity/datum.Population * 10000",
+        "as": "Quanitity (kg) per 10,000 people"
+        },
+        {"filter": "Continent_selection == null || datum.Reigon == Continent_selection"},
+        {"filter": "datum.Population > Population_Above"},
+        {"filter": "datum.Quantity > 0"}
+
+    ],
+    "params":[
+        {
+            "name": "Continent_selection",
+            "bind": {
+                "input": "select",
+                "options": [null,"North America","South America","Europe","Africa","Asia","Oceania"],
+                "labels":["Show All","North America","South America","Europe","Africa","Asia","Oceania"],
+                "name": "Continent Selection: "
+            }
+        },
+        {
+            "name": "Population_Above",
+            "value": 0,
+            "bind": {
+                "input": "range",
+                "min": 0,
+                "max": 100000000,
+                "step": 1000000,
+                "name": "Minimum Population: "
+        
+            }
+        }
+            
+               
+    ],
+    
+    "encoding": {
+        "x": {
+            "field": "Value",
+            "type": "quantitative",
+            "title": "Trade Value (1000 US Dollars)",
+            "axis": {"tickCount": 7},
+            "scale": {"type": "log", "domain": [0.001, 10000000]}
+        },
+        "y": {
+            "field": "Quantity",
+            "type": "quantitative",
+            "title": "Total Quantity (kg)",
+            "axis": {"tickCount": 8},
+            "scale": {"type": "log", "domain": [0.001, 1000000000000]}
+        }
+    },
+    "layer": [
+        {
+            "mark": "circle",
+            "encoding":{
+            "color": {
+                "field": "Reigon",
+                "type": "nominal",
+                "scale": {
+                    "domain": ["North America", "South America","Europe","Africa","Asia","Oceania"],
+                    "range": ["#e41a1c","#984ea3","#ff7f00","#a6cee3","#1b9e77","#a65628"]
+                }
+            },
+            "opacity": {
+                "value": 0.8
+            },
+            "size": {
+                "field": "Population",
+                "type": "quantitative",
+                "scale": {
+                    "type": "threshold",
+                    "domain": [1000000, 10000000, 50000000, 100000000, 500000000],
+                    "range": [10, 50, 150, 200, 300, 400]
+                },
+                "legend": {"format": ".1s"}
+            },
+            "tooltip": [
+                {"field": "Country", "type": "nominal"},
+                {"field": "Quantity", "type": "quantitative", "format": ","},
+                {"field": "Value", "type": "quantitative", "format": ","},
+                {"field": "Population", "type": "quantitative", "format": ","},
+                {
+                    "field": "Quanitity (kg) per 10,000 people",
+                    "type": "quantitative",
+                    "format": ".2f"
+                }
+            ]
+        }
+        }, 
+        {
+        "mark": {
+            "type": "text",
+            "align": "right",
+            "baseline": "top",
+            "dx": -12,
+            "fontSize": 13.5,
+            "fontStyle": "italic",
+            "fontWeight":"lighter"
+
+        },
+        "encoding": {
+            "text": {"field": "Country", "type": "nominal"},
+            "color": {"value": "#000000"},
+            "opacity": {
+                "condition": {
+                    "test": "datum['Country'] == 'Uruguay' || datum['Country'] == 'Singapore' || datum['Country'] == 'United Kingdom' || datum['Country'] == 'Lebanon' || datum['Country'] == 'Germany' || datum['Country'] == 'Saudi Arabia' || datum['Country'] == 'United States'",
+                    "value": 1
+                },
+                "value": 0
+            },
+            "tooltip": [
+                {"field": "Country", "type": "nominal"},
+                {"field": "Quantity", "type": "quantitative", "format": ","},
+                {"field": "Value", "type": "quantitative", "format": ","},
+                {"field": "Population", "type": "quantitative", "format": ","},
+                {
+                    "field": "Quanitity (kg) per 10,000 people",
+                    "type": "quantitative",
+                    "format": ".2f"
+                }
+            ]
+        }
+    }
+    ]
+}
+
+            
+
